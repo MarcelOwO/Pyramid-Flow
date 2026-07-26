@@ -117,3 +117,6 @@ venv.bak/
 dmypy.json
 .bak
 
+*.mp4
+*.model
+pyramid_flow_model/
