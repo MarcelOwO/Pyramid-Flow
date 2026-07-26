@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>README.html</title>
+<meta http-equiv="Content-Type" content="application/xhtml+xml;charset=utf-8"/>
+<link rel="stylesheet" type="text/css" media="all" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css"  />
+<link rel="stylesheet" type="text/css" media="all" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/github.min.css"  /><meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'><style> body { box-sizing: border-box; max-width: 740px; width: 100%; margin: 40px auto; padding: 0 10px; } </style><script id='MathJax-script' async src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'></script><script src='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/highlight.min.js'></script><script>document.addEventListener('DOMContentLoaded', () => { document.body.classList.add('markdown-body'); document.querySelectorAll('pre[lang] > code').forEach((code) => { code.classList.add(code.parentElement.lang); }); document.querySelectorAll('pre > code').forEach((code) => { hljs.highlightBlock(code); }); });</script>
+</head>
+
+<body>
+
+[WARNING] Deprecated: --highlight-style. Use --syntax-highlighting instead.
+<section id="pyramid-flow" data-align="center">
+<h1>⚡️Pyramid Flow⚡️</h1>
+<p><a href="https://arxiv.org/abs/2410.05954">[Paper]</a> <a
+href="https://pyramid-flow.github.io">[Project Page ✨]</a> <a
+href="https://huggingface.co/rain1011/pyramid-flow-miniflux">[miniFLUX
+Model 🚀]</a> <a
+href="https://huggingface.co/rain1011/pyramid-flow-sd3">[SD3 Model
+⚡️]</a> [<a
+href="https://huggingface.co/spaces/Pyramid-Flow/pyramid-flow">demo
+🤗</a>]</p>
+</section>
+<p>This is the official repository for Pyramid Flow, a
+training-efficient <strong>Autoregressive Video Generation</strong>
+method based on <strong>Flow Matching</strong>. By training only on
+<strong>open-source datasets</strong>, it can generate high-quality
+10-second videos at 768p resolution and 24 FPS, and naturally supports
+image-to-video generation.</p>
+<table class="center" border="0" style="width: 100%; text-align: left;">
+<tr>
+<th>
+10s, 768p, 24fps
+</th>
+<th>
+5s, 768p, 24fps
+</th>
+<th>
+Image-to-video
+</th>
+</tr>
+<tr>
+<td>
+<video src="https://github.com/user-attachments/assets/9935da83-ae56-4672-8747-0f46e90f7b2b" autoplay muted loop playsinline>
+</video>
+</td>
+<td>
+<video src="https://github.com/user-attachments/assets/3412848b-64db-4d9e-8dbf-11403f6d02c5" autoplay muted loop playsinline>
+</video>
+</td>
+<td>
+<video src="https://github.com/user-attachments/assets/3bd7251f-7b2c-4bee-951d-656fdb45f427" autoplay muted loop playsinline>
+</video>
+</td>
+</tr>
+</table>
+<h2 id="news">News</h2>
+<ul>
+<li><p><code>2024.11.13</code> 🚀🚀🚀 We release the <a
+href="https://huggingface.co/rain1011/pyramid-flow-miniflux">768p
+miniFLUX checkpoint</a> (up to 10s).</p>
+<blockquote>
+<p>We have switched the model structure from SD3 to a mini FLUX to fix
+human structure issues, please try our 1024p image checkpoint, 384p
+video checkpoint (up to 5s) and 768p video checkpoint (up to 10s). The
+new miniflux model shows great improvement on human structure and motion
+stability</p>
+</blockquote></li>
+<li><p><code>2024.10.29</code> ⚡️⚡️⚡️ We release <a
+href="#1-training-vae">training code for VAE</a>, <a
+href="#2-finetuning-dit">finetuning code for DiT</a> and <a
+href="https://huggingface.co/rain1011/pyramid-flow-miniflux">new model
+checkpoints</a> with FLUX structure trained from scratch.</p></li>
+<li><p><code>2024.10.13</code> ✨✨✨ <a
+href="#3-multi-gpu-inference">Multi-GPU inference</a> and <a
+href="#cpu-offloading">CPU offloading</a> are supported. Use it with
+<strong>less than 8GB</strong> of GPU memory, with great speedup on
+multiple GPUs.</p></li>
+<li><p><code>2024.10.11</code> 🤗🤗🤗 <a
+href="https://huggingface.co/spaces/Pyramid-Flow/pyramid-flow">Hugging
+Face demo</a> is available. Thanks <a
+href="https://huggingface.co/multimodalart"><span class="citation"
+data-cites="multimodalart">@multimodalart</span></a> for the
+commit!</p></li>
+<li><p><code>2024.10.10</code> 🚀🚀🚀 We release the <a
+href="https://arxiv.org/abs/2410.05954">technical report</a>, <a
+href="https://pyramid-flow.github.io">project page</a> and <a
+href="https://huggingface.co/rain1011/pyramid-flow-sd3">model
+checkpoint</a> of Pyramid Flow.</p></li>
+</ul>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#inference">Inference</a>
+<ol type="1">
+<li><a href="#1-quick-start-with-gradio">Quick Start with
+Gradio</a></li>
+<li><a href="#2-inference-code">Inference Code</a></li>
+<li><a href="#3-multi-gpu-inference">Multi-GPU Inference</a></li>
+<li><a href="#4-usage-tips">Usage Tips</a></li>
+</ol></li>
+<li><a href="#Training">Training</a>
+<ol type="1">
+<li><a href="#training-vae">Training VAE</a></li>
+<li><a href="#finetuning-dit">Finetuning DiT</a></li>
+</ol></li>
+<li><a href="#gallery">Gallery</a></li>
+<li><a href="#comparison">Comparison</a></li>
+<li><a href="#acknowledgement">Acknowledgement</a></li>
+<li><a href="#citation">Citation</a></li>
+</ul>
+<h2 id="introduction">Introduction</h2>
+<figure>
+<img src="assets/motivation.jpg" alt="motivation" />
+<figcaption aria-hidden="true">motivation</figcaption>
+</figure>
+<p>Existing video diffusion models operate at full resolution, spending
+a lot of computation on very noisy latents. By contrast, our method
+harnesses the flexibility of flow matching (<a
+href="https://openreview.net/forum?id=PqvMRDCJT9t">Lipman et al.,
+2023</a>; <a href="https://openreview.net/forum?id=XVjTT1nw5z">Liu et
+al., 2023</a>; <a
+href="https://openreview.net/forum?id=li7qeBbCR1t">Albergo &amp;
+Vanden-Eijnden, 2023</a>) to interpolate between latents of different
+resolutions and noise levels, allowing for simultaneous generation and
+decompression of visual content with better computational efficiency.
+The entire framework is end-to-end optimized with a single DiT (<a
+href="http://openaccess.thecvf.com/content/ICCV2023/html/Peebles_Scalable_Diffusion_Models_with_Transformers_ICCV_2023_paper.html">Peebles
+&amp; Xie, 2023</a>), generating high-quality 10-second videos at 768p
+resolution and 24 FPS within 20.7k A100 GPU training hours.</p>
+<h2 id="installation">Installation</h2>
+<p>We recommend setting up the environment with conda. The codebase
+currently uses Python 3.8.10 and PyTorch 2.1.2 (<a
+href="https://pytorch.org/get-started/previous-versions/#v212">guide</a>),
+and we are actively working to support a wider range of versions.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/jy0205/Pyramid-Flow</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> Pyramid-Flow</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># create env using conda</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> create <span class="at">-n</span> pyramid python==3.8.10</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate pyramid</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-r</span> requirements.txt</span></code></pre></div>
+<p>Then, download the model from <a
+href="https://huggingface.co/rain1011">Huggingface</a> (there are two
+variants: <a
+href="https://huggingface.co/rain1011/pyramid-flow-miniflux">miniFLUX</a>
+or <a href="https://huggingface.co/rain1011/pyramid-flow-sd3">SD3</a>).
+The miniFLUX models support 1024p image, 384p and 768p video generation,
+and the SD3-based models support 768p and 384p video generation. The
+384p checkpoint generates 5-second video at 24FPS, while the 768p
+checkpoint generates up to 10-second video at 24FPS.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> huggingface_hub <span class="im">import</span> snapshot_download</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>model_path <span class="op">=</span> <span class="st">&#39;PATH&#39;</span>   <span class="co"># The local directory to save downloaded checkpoint</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>snapshot_download(<span class="st">&quot;rain1011/pyramid-flow-miniflux&quot;</span>, local_dir<span class="op">=</span>model_path, local_dir_use_symlinks<span class="op">=</span><span class="va">False</span>, repo_type<span class="op">=</span><span class="st">&#39;model&#39;</span>)</span></code></pre></div>
+<h2 id="inference">Inference</h2>
+<h3 id="quick-start-with-gradio">1. Quick start with Gradio</h3>
+<p>To get started, first install <a
+href="https://www.gradio.app/guides/quickstart">Gradio</a>, set your
+model path at <a
+href="https://github.com/jy0205/Pyramid-Flow/blob/3777f8b84bddfa2aa2b497ca919b3f40567712e6/app.py#L36">#L36</a>,
+and then run on your local machine:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> app.py</span></code></pre></div>
+<p>The Gradio demo will be opened in a browser. Thanks to <a
+href="https://github.com/tpc2233"><span class="citation"
+data-cites="tpc2233">@tpc2233</span></a> the commit, see <a
+href="https://github.com/jy0205/Pyramid-Flow/pull/48">#48</a> for
+details.</p>
+<p>Or, try it out effortlessly on <a
+href="https://huggingface.co/spaces/Pyramid-Flow/pyramid-flow">Hugging
+Face Space 🤗</a> created by <a
+href="https://huggingface.co/multimodalart"><span class="citation"
+data-cites="multimodalart">@multimodalart</span></a>. Due to GPU limits,
+this online demo can only generate 25 frames (export at 8FPS or 24FPS).
+Duplicate the space to generate longer videos.</p>
+<h4 id="quick-start-on-google-colab">Quick Start on Google Colab</h4>
+<p>To quickly try out Pyramid Flow on Google Colab, run the code
+below:</p>
+<pre><code># Setup
+!git clone https://github.com/jy0205/Pyramid-Flow
+%cd Pyramid-Flow
+!pip install -r requirements.txt
+!pip install gradio
+
+# This code downloads miniFLUX
+from huggingface_hub import snapshot_download
+
+model_path = &#39;/content/Pyramid-Flow&#39;
+snapshot_download(&quot;rain1011/pyramid-flow-miniflux&quot;, local_dir=model_path, local_dir_use_symlinks=False, repo_type=&#39;model&#39;)
+
+# Start
+!python app.py</code></pre>
+<h3 id="inference-code">2. Inference Code</h3>
+<p>To use our model, please follow the inference code in
+<code>video_generation_demo.ipynb</code> at <a
+href="https://github.com/jy0205/Pyramid-Flow/blob/main/video_generation_demo.ipynb">this
+link</a>. We strongly recommend you to try the latest published
+pyramid-miniflux, which shows great improvement on human structure and
+motion stability. Set the param <code>model_name</code> to
+<code>pyramid_flux</code> to use. We further simplify it into the
+following two-step procedure. First, load the downloaded model:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyramid_dit <span class="im">import</span> PyramidDiTForVideoGeneration</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> diffusers.utils <span class="im">import</span> load_image, export_to_video</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>torch.cuda.set_device(<span class="dv">0</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>model_dtype, torch_dtype <span class="op">=</span> <span class="st">&#39;bf16&#39;</span>, torch.bfloat16   <span class="co"># Use bf16 (not support fp16 yet)</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> PyramidDiTForVideoGeneration(</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;PATH&#39;</span>,                                         <span class="co"># The downloaded checkpoint dir</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    model_name<span class="op">=</span><span class="st">&quot;pyramid_flux&quot;</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    model_dtype,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    model_variant<span class="op">=</span><span class="st">&#39;diffusion_transformer_768p&#39;</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>model.vae.enable_tiling()</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># model.vae.to(&quot;cuda&quot;)</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co"># model.dit.to(&quot;cuda&quot;)</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># model.text_encoder.to(&quot;cuda&quot;)</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co"># if you&#39;re not using sequential offloading bellow uncomment the lines above ^</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>model.enable_sequential_cpu_offload()</span></code></pre></div>
+<p>Then, you can try text-to-video generation on your own prompts.
+Noting that the 384p version only support 5s now (set temp up to
+16)!</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> <span class="st">&quot;A movie trailer featuring the adventures of the 30 year old space man wearing a red wool knitted motorcycle helmet, blue sky, salt desert, cinematic style, shot on 35mm film, vivid colors&quot;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># used for 384p model variant</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># width = 640</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># height = 384</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># used for 768p model variant</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>width <span class="op">=</span> <span class="dv">1280</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>height <span class="op">=</span> <span class="dv">768</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> torch.no_grad(), torch.cuda.amp.autocast(enabled<span class="op">=</span><span class="va">True</span>, dtype<span class="op">=</span>torch_dtype):</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    frames <span class="op">=</span> model.generate(</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        prompt<span class="op">=</span>prompt,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        num_inference_steps<span class="op">=</span>[<span class="dv">20</span>, <span class="dv">20</span>, <span class="dv">20</span>],</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        video_num_inference_steps<span class="op">=</span>[<span class="dv">10</span>, <span class="dv">10</span>, <span class="dv">10</span>],</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span>height,     </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        width<span class="op">=</span>width,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        temp<span class="op">=</span><span class="dv">16</span>,                    <span class="co"># temp=16: 5s, temp=31: 10s</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>        guidance_scale<span class="op">=</span><span class="fl">7.0</span>,         <span class="co"># The guidance for the first frame, set it to 7 for 384p variant</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        video_guidance_scale<span class="op">=</span><span class="fl">5.0</span>,   <span class="co"># The guidance for the other video latent</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        output_type<span class="op">=</span><span class="st">&quot;pil&quot;</span>,</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        save_memory<span class="op">=</span><span class="va">True</span>,           <span class="co"># If you have enough GPU memory, set it to `False` to improve vae decoding speed</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>export_to_video(frames, <span class="st">&quot;./text_to_video_sample.mp4&quot;</span>, fps<span class="op">=</span><span class="dv">24</span>)</span></code></pre></div>
+<p>As an autoregressive model, our model also supports (text
+conditioned) image-to-video generation:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># used for 384p model variant</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># width = 640</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># height = 384</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># used for 768p model variant</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>width <span class="op">=</span> <span class="dv">1280</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>height <span class="op">=</span> <span class="dv">768</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>image <span class="op">=</span> Image.<span class="bu">open</span>(<span class="st">&#39;assets/the_great_wall.jpg&#39;</span>).convert(<span class="st">&quot;RGB&quot;</span>).resize((width, height))</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> <span class="st">&quot;FPV flying over the Great Wall&quot;</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> torch.no_grad(), torch.cuda.amp.autocast(enabled<span class="op">=</span><span class="va">True</span>, dtype<span class="op">=</span>torch_dtype):</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    frames <span class="op">=</span> model.generate_i2v(</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        prompt<span class="op">=</span>prompt,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        input_image<span class="op">=</span>image,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        num_inference_steps<span class="op">=</span>[<span class="dv">10</span>, <span class="dv">10</span>, <span class="dv">10</span>],</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        temp<span class="op">=</span><span class="dv">16</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        video_guidance_scale<span class="op">=</span><span class="fl">4.0</span>,</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        output_type<span class="op">=</span><span class="st">&quot;pil&quot;</span>,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        save_memory<span class="op">=</span><span class="va">True</span>,           <span class="co"># If you have enough GPU memory, set it to `False` to improve vae decoding speed</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>export_to_video(frames, <span class="st">&quot;./image_to_video_sample.mp4&quot;</span>, fps<span class="op">=</span><span class="dv">24</span>)</span></code></pre></div>
+<h4 id="cpu-offloading">CPU offloading</h4>
+<p>We also support two types of CPU offloading to reduce GPU memory
+requirements. Note that they may sacrifice efficiency. * Adding a
+<code>cpu_offloading=True</code> parameter to the generate function
+allows inference with <strong>less than 12GB</strong> of GPU memory.
+This feature was contributed by <a
+href="https://github.com/Ednaordinary"><span class="citation"
+data-cites="Ednaordinary">@Ednaordinary</span></a>, see <a
+href="https://github.com/jy0205/Pyramid-Flow/pull/23">#23</a> for
+details. * Calling <code>model.enable_sequential_cpu_offload()</code>
+before the above procedure allows inference with <strong>less than
+8GB</strong> of GPU memory. This feature was contributed by <a
+href="https://github.com/rodjjo"><span class="citation"
+data-cites="rodjjo">@rodjjo</span></a>, see <a
+href="https://github.com/jy0205/Pyramid-Flow/pull/75">#75</a> for
+details.</p>
+<h4 id="mps-backend">MPS backend</h4>
+<p>Thanks to <a href="https://github.com/niw"><span class="citation"
+data-cites="niw">@niw</span></a>, Apple Silicon users (e.g. MacBook Pro
+with M2 24GB) can also try our model using the MPS backend! Please see
+<a href="https://github.com/jy0205/Pyramid-Flow/pull/113">#113</a> for
+the details.</p>
+<h3 id="multi-gpu-inference">3. Multi-GPU Inference</h3>
+<p>For users with multiple GPUs, we provide an <a
+href="https://github.com/jy0205/Pyramid-Flow/blob/main/scripts/inference_multigpu.sh">inference
+script</a> that uses sequence parallelism to save memory on each GPU.
+This also brings a big speedup, taking only 2.5 minutes to generate a
+5s, 768p, 24fps video on 4 A100 GPUs (vs. 5.5 minutes on a single A100
+GPU). Run it on 2 GPUs with the following command:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="va">CUDA_VISIBLE_DEVICES</span><span class="op">=</span>0,1 <span class="fu">sh</span> scripts/inference_multigpu.sh</span></code></pre></div>
+<p>It currently supports 2 or 4 GPUs (For SD3 Version), with more
+configurations available in the original script. You can also launch a
+<a
+href="https://github.com/jy0205/Pyramid-Flow/blob/main/scripts/app_multigpu_engine.sh">multi-GPU
+Gradio demo</a> created by <a href="https://github.com/tpc2233"><span
+class="citation" data-cites="tpc2233">@tpc2233</span></a>, see <a
+href="https://github.com/jy0205/Pyramid-Flow/pull/59">#59</a> for
+details.</p>
+<blockquote>
+<p>Spoiler: We didn’t even use sequence parallelism in training, thanks
+to our efficient pyramid flow designs.</p>
+</blockquote>
+<h3 id="usage-tips">4. Usage tips</h3>
+<ul>
+<li>The <code>guidance_scale</code> parameter controls the visual
+quality. We suggest using a guidance within [7, 9] for the 768p
+checkpoint during text-to-video generation, and 7 for the 384p
+checkpoint.</li>
+<li>The <code>video_guidance_scale</code> parameter controls the motion.
+A larger value increases the dynamic degree and mitigates the
+autoregressive generation degradation, while a smaller value stabilizes
+the video.</li>
+<li>For 10-second video generation, we recommend using a guidance scale
+of 7 and a video guidance scale of 5.</li>
+</ul>
+<h2 id="training">Training</h2>
+<h3 id="training-vae">1. Training VAE</h3>
+<p>The hardware requirements for training VAE are at least 8 A100 GPUs.
+Please refer to <a
+href="https://github.com/jy0205/Pyramid-Flow/blob/main/docs/VAE.md">this
+document</a>. This is a <a
+href="https://arxiv.org/abs/2310.05737">MAGVIT-v2</a> like continuous 3D
+VAE, which should be quite flexible. Feel free to build your own video
+generative model on this part of VAE training code.</p>
+<h3 id="finetuning-dit">2. Finetuning DiT</h3>
+<p>The hardware requirements for finetuning DiT are at least 8 A100
+GPUs. Please refer to <a
+href="https://github.com/jy0205/Pyramid-Flow/blob/main/docs/DiT.md">this
+document</a>. We provide instructions for both autoregressive and
+non-autoregressive versions of Pyramid Flow. The former is more research
+oriented and the latter is more stable (but less efficient without
+temporal pyramid).</p>
+<h2 id="gallery">Gallery</h2>
+<p>The following video examples are generated at 5s, 768p, 24fps. For
+more results, please visit our <a
+href="https://pyramid-flow.github.io">project page</a>.</p>
+<table class="center" border="0" style="width: 100%; text-align: left;">
+<tr>
+<td>
+<video src="https://github.com/user-attachments/assets/5b44a57e-fa08-4554-84a2-2c7a99f2b343" autoplay muted loop playsinline>
+</video>
+</td>
+<td>
+<video src="https://github.com/user-attachments/assets/5afd5970-de72-40e2-900d-a20d18308e8e" autoplay muted loop playsinline>
+</video>
+</td>
+</tr>
+<tr>
+<td>
+<video src="https://github.com/user-attachments/assets/1d44daf8-017f-40e9-bf18-1e19c0a8983b" autoplay muted loop playsinline>
+</video>
+</td>
+<td>
+<video src="https://github.com/user-attachments/assets/7f5dd901-b7d7-48cc-b67a-3c5f9e1546d2" autoplay muted loop playsinline>
+</video>
+</td>
+</tr>
+</table>
+<h2 id="comparison">Comparison</h2>
+<p>On VBench (<a
+href="https://huggingface.co/spaces/Vchitect/VBench_Leaderboard">Huang
+et al., 2024</a>), our method surpasses all the compared open-source
+baselines. Even with only public video data, it achieves comparable
+performance to commercial models like Kling (<a
+href="https://kling.kuaishou.com/en">Kuaishou, 2024</a>) and Gen-3 Alpha
+(<a href="https://runwayml.com/research/introducing-gen-3-alpha">Runway,
+2024</a>), especially in the quality score (84.74 vs. 84.11 of Gen-3)
+and motion smoothness.</p>
+<figure>
+<img src="assets/vbench.jpg" alt="vbench" />
+<figcaption aria-hidden="true">vbench</figcaption>
+</figure>
+<p>We conduct an additional user study with 20+ participants. As can be
+seen, our method is preferred over open-source models such as <a
+href="https://github.com/hpcaitech/Open-Sora">Open-Sora</a> and <a
+href="https://github.com/THUDM/CogVideo">CogVideoX-2B</a> especially in
+terms of motion smoothness.</p>
+<figure>
+<img src="assets/user_study.jpg" alt="user_study" />
+<figcaption aria-hidden="true">user_study</figcaption>
+</figure>
+<h2 id="acknowledgement">Acknowledgement</h2>
+<p>We are grateful for the following awesome projects when implementing
+Pyramid Flow:</p>
+<ul>
+<li><a
+href="https://huggingface.co/stabilityai/stable-diffusion-3-medium">SD3
+Medium</a> and <a
+href="https://huggingface.co/black-forest-labs/FLUX.1-dev">Flux 1.0</a>:
+State-of-the-art image generation models based on flow matching.</li>
+<li><a href="https://boyuan.space/diffusion-forcing">Diffusion
+Forcing</a> and <a href="https://gamengen.github.io">GameNGen</a>:
+Next-token prediction meets full-sequence diffusion.</li>
+<li><a href="https://github.com/m-bain/webvid">WebVid-10M</a>, <a
+href="https://github.com/NJU-PCALab/OpenVid-1M">OpenVid-1M</a> and <a
+href="https://github.com/PKU-YuanGroup/Open-Sora-Plan">Open-Sora
+Plan</a>: Large-scale datasets for text-to-video generation.</li>
+<li><a href="https://github.com/THUDM/CogVideo">CogVideoX</a>: An
+open-source text-to-video generation model that shares many training
+details.</li>
+<li><a
+href="https://github.com/DAMO-NLP-SG/VideoLLaMA2">Video-LLaMA2</a>: An
+open-source video LLM for our video recaptioning.</li>
+</ul>
+<h2 id="citation">Citation</h2>
+<p>Consider giving this repository a star and cite Pyramid Flow in your
+publications if it helps your research.</p>
+<pre><code>@article{jin2024pyramidal,
+  title={Pyramidal Flow Matching for Efficient Video Generative Modeling},
+  author={Jin, Yang and Sun, Zhicheng and Li, Ningyuan and Xu, Kun and Xu, Kun and Jiang, Hao and Zhuang, Nan and Huang, Quzhe and Song, Yang and Mu, Yadong and Lin, Zhouchen},
+  jounal={arXiv preprint arXiv:2410.05954},
+  year={2024}
+}</code></pre>
+
+</body>
+</html>
