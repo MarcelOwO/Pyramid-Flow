@@ -29,14 +29,16 @@ model_repo = (
 
 model_dtype = "bf16"  # Support bf16 and fp32
 variants = {
+    "very_high": "diffusion_transformer_1080p",  # For high-resolution version
     "high": "diffusion_transformer_768p",  # For high-resolution version
     "low": "diffusion_transformer_384p",  # For low-resolution version
 }
 required_file = "config.json"  # Ensure config.json is present
-width_high = 1280
-height_high = 768
-width_low = 640
-height_low = 384
+
+resolutions = ["384p", "768p", "1080p"]
+widths = {"1080p": 1920, "768p": 1280, "384p": 640}
+heights = {"1080p": 1088, "768p": 768, "384p": 384}
+
 cpu_offloading = torch.cuda.is_available()  # enable cpu_offloading by default
 
 # Get the current working directory and create a folder to store the model
@@ -205,9 +207,11 @@ def generate_text_to_video(
 ):
     progress(0, desc="Loading model")
     print("[DEBUG] generate_text_to_video called.")
-    variant = "768p" if resolution == "768p" else "384p"
-    height = height_high if resolution == "768p" else height_low
-    width = width_high if resolution == "768p" else width_low
+    if resolution not in resolutions:
+        raise ValueError("Invalid resolution")
+    variant = resolution
+    height = heights[variant]
+    width = widths[variant]
 
     def progress_callback(i, m):
         progress(i / m)
@@ -263,10 +267,11 @@ def generate_image_to_video(
 ):
     progress(0, desc="Loading model")
     print("[DEBUG] generate_image_to_video called.")
-    variant = "768p" if resolution == "768p" else "384p"
-    height = height_high if resolution == "768p" else height_low
-    width = width_high if resolution == "768p" else width_low
-
+    if resolution not in resolutions:
+        raise ValueError("Invalid resolution")
+    variant = resolution
+    height = heights[variant]
+    width = widths[variant]
     try:
         image = resize_crop_image(image, width, height)
         print("[INFO] Image resized and cropped successfully.")
@@ -336,7 +341,7 @@ Pyramid Flow is a training-efficient **Autoregressive Video Generation** model b
     # Shared settings
     with gr.Row():
         resolution_dropdown = gr.Dropdown(
-            choices=["768p", "384p"], value="384p", label="Model Resolution"
+            choices=["768p", "384p", "1080p"], value="384p", label="Model Resolution"
         )
 
     with gr.Tab("Text-to-Video"):
